@@ -1,0 +1,30 @@
+services:
+  overleafmongo:
+    image: "mongo:8.0"
+    container_name: overleafmongo
+    hostname: overleafmongo
+    restart: always
+    healthcheck:
+      test: "mongosh --quiet --eval 'rs.hello().setName ? rs.hello().setName : rs.initiate({_id: \"overleaf\",members:[{_id: 0, host:\"overleafmongo:27017\"}]})'"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    command: "--replSet overleaf"
+
+    volumes:
+      - ./data_db:/data/db
+      - ./data_configdb:/data/configdb
+      - ./backup:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - overleaf-network
+    expose: 
+      - 27017
+    extra_hosts:
+      - "mongo:127.0.0.1"
+      - "overleafmongo:127.0.0.1"
+
+networks:
+  overleaf-network:
+    external: true
+

@@ -1,0 +1,21 @@
+myhostname = overleaf.local
+myorigin = overleaf.local
+mydestination = overleaf.local, $myhostname, localhost.localdomain, localhost
+virtual_alias_maps = static:dumpuser
+
+home_mailbox = Maildir/
+
+# Logging
+maillog_file = /dev/stdout
+compatibility_level = 3.6
+
+# TLS Configuration
+smtpd_tls_cert_file = /certs/ca.pem
+smtpd_tls_key_file = /certs/key.pem
+smtpd_use_tls = yes
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = no
+smtpd_tls_loglevel = 1
+smtpd_tls_received_header = yes
+smtpd_tls_session_cache_timeout = 3600s
+

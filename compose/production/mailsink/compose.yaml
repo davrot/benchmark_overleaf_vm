@@ -1,0 +1,27 @@
+services:
+  mailsink:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mailsink-mailsink:latest
+    container_name: mailsink
+    hostname: mailsink
+
+    volumes:
+      - ".:/config:ro"
+      - "../nginx/key.pem:/certs/key.pem:ro"
+      - "./postfix_cert.pem:/certs/ca.pem:ro"
+      - "./mails:/var/mail"
+
+    networks:
+      - overleaf-network
+
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "25"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  overleaf-network:
+    external: true

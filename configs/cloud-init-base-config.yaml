@@ -1,0 +1,87 @@
+#cloud-config
+# Calculate ssh keys: ssh-keygen -t ed25519 -C "LLM VM" -f ./cloud-init-key
+# Calculate Password: mkpasswd -m sha-512 -R 4096
+
+hostname: VM_NAME_PLACEHOLDER
+
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    # Password is: LLM
+    passwd: $6$rounds=4096$Z2tXWoq6e0yj1BjG$SO3i8AquszLVkYMGstv4OBRZBuOPE/JnjLOhqZQovW7vm1R8tAmOyHloKix8BkmW4jZF4R04FKbVdNsV70AOJ/
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrkHvJjOcHznFm5I31+vSj8RLrGQ+rzDW8HhU5CA2C8 LLM VM
+
+ssh_pwauth: true
+disable_root: false
+package_update: true
+package_upgrade: true
+
+packages:
+  - openssh-server
+  - git
+  - curl
+  - wget
+  - mc
+  - lynx
+  - build-essential
+  - jq
+  - ca-certificates
+  - gnupg
+  - unzip
+  - inetutils-ping
+  - telnet
+  - netcat-traditional
+  - xvfb
+  - openjdk-25-jdk
+  - maven
+
+
+runcmd:
+  # Ensure SSH is running
+  - systemctl enable ssh
+  - systemctl start ssh
+  
+  # Docker installation
+  - mkdir -p /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - apt-get update
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  
+  # NVM and Node.js
+  - su - ubuntu -c 'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash'
+  - su - ubuntu -c 'bash -c "export NVM_DIR=\"\$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm install 24"'
+  
+  # Playwright
+  - su - ubuntu -c 'bash -c "export NVM_DIR=\"\$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && npm install -g playwright && npx playwright install --with-deps"'
+  
+  # Go installation
+  - curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
+  - rm -rf /usr/local/go
+  - tar -C /usr/local -xzf /tmp/go.tar.gz
+  - rm /tmp/go.tar.gz
+  
+  # Go environment for ubuntu user
+  - su - ubuntu -c 'mkdir -p $HOME/go'
+  - su - ubuntu -c 'echo "export GOPATH=\$HOME/go" >> ~/.bashrc'
+  - su - ubuntu -c 'echo "export PATH=\$PATH:/usr/local/go/bin:\$GOPATH/bin" >> ~/.bashrc'
+  
+  # Install golangci-lint
+  - su - ubuntu -c 'bash -c "export GOPATH=\$HOME/go && curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b \$GOPATH/bin v1.55.2"'
+  
+  # Create workspace and clone repo
+  - mkdir -p /workspace
+  - chown ubuntu:ubuntu /workspace
+  - su - ubuntu -c 'git clone https://github.com/davrot/benchmark_overleaf.git /workspace/freshcode'
+  
+  # Signal completion
+  - touch /var/lib/cloud/instance/setup-complete
+
+final_message: "Cloud-init setup complete! System is ready."
