@@ -180,5 +180,3 @@ ssh -p $SSH_PORT -i ./cloud-init-key -o StrictHostKeyChecking=no ubuntu@localhos
 EOF
 ```
 
-## Todo (production):
-* email
