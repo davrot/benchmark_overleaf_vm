@@ -79,7 +79,7 @@ runcmd:
   # Create workspace and clone repo
   - mkdir -p /workspace
   - chown ubuntu:ubuntu /workspace
-  - su - ubuntu -c 'git clone https://github.com/davrot/benchmark_overleaf.git /workspace/freshcode'
+  - su - ubuntu -c 'git clone https://github.com/davrot/benchmark_overleaf.git /workspace/main'
   
   # Signal completion
   - touch /var/lib/cloud/instance/setup-complete

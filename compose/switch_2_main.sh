@@ -1,6 +1,6 @@
-BRANCH="feature_references"
+BRANCH="main"
 rm -rf /workspace/${BRANCH}
-git clone -b ${BRANCH} https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
+git clone https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
 cd /workspace/${BRANCH}/server-ce
 make build-base
 make build-community

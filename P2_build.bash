@@ -8,7 +8,7 @@ echo "🚀 Running build commands inside $TARGET_VM..."
 
 # 4. Execute the build commands via SSH
 ssh -p $SSH_PORT -i ./cloud-init-key -o StrictHostKeyChecking=no ubuntu@localhost << EOF
-  cd /workspace/freshcode/server-ce/
+  cd /workspace/main/server-ce/
   make build-base 
   make build-community
   docker pull redis:8.4-alpine

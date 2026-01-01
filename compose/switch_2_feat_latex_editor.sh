@@ -1,4 +1,4 @@
-BRANCH="feature_references"
+BRANCH="feature_latex_editor"
 rm -rf /workspace/${BRANCH}
 git clone -b ${BRANCH} https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
 cd /workspace/${BRANCH}/server-ce

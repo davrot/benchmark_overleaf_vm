@@ -42,9 +42,9 @@ Hence, we clone the basis VM (the basis VM needs to be shutdown for this operati
 
 Next we start the build process. Or in other words: We run this
 ```
-cd /workspace/freshcode/develop && ./bin/build
+cd /workspace/main/develop && ./bin/build
 docker build texlive -t texlive-full
-cd /workspace/freshcode/services/git-bridge && docker build -t writelatex-git-bridge .
+cd /workspace/main/services/git-bridge && docker build -t writelatex-git-bridge .
 docker pull 8.4-alpine
 docker pull mongo:8.0
 ```
