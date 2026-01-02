@@ -11,9 +11,15 @@ services:
       - FLASK_ENV=development
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/models', headers={'Authorization': 'Bearer sk-test-mock-api-key-12345'})"]
+      test: ["CMD", "curl", "-f", "-H", "Authorization: Bearer sk-test-mock-api-key-12345", "http://localhost:8000/v1/models"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 5s
 
+    networks:
+      - overleaf-network
+
+networks:
+  overleaf-network:
+    external: true
