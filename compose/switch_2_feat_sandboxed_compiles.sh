@@ -1,4 +1,7 @@
-BRANCH="feature_admin_extensions"
+BRANCH="feature-sandboxed-compiles"
+docker pull texlive/texlive:latest-full
+docker pull texlive/texlive:TL2024-historic
+
 rm -rf /workspace/${BRANCH}
 git clone -b ${BRANCH} https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
 cd /workspace/${BRANCH}/server-ce

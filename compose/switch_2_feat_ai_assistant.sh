@@ -11,6 +11,7 @@ sh build.sh
 cd /workspace/production/
 sh down.sh
 
+cp /workspace/production/nginx/nginx.conf_main /workspace/production/nginx/nginx.conf
 cp /workspace/production/compose.yaml_${BRANCH} /workspace/production/compose.yaml
 cp /workspace/production/overleafserver/compose.yaml_${BRANCH} /workspace/production/overleafserver/compose.yaml
 
