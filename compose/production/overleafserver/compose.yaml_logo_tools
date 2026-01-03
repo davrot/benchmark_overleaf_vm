@@ -1,0 +1,59 @@
+services:
+  overleafserver:
+    image: docker.io/sharelatex/sharelatex:logo_tools
+    container_name: overleafserver
+    hostname: overleafserver
+    restart: always
+    volumes:
+    - ./data:/var/lib/overleaf
+    - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+    - 80
+
+    environment:
+      GIT_BRIDGE_ENABLED: false
+      GIT_BRIDGE_HOST: git-bridge
+      GIT_BRIDGE_PORT: 8000
+
+      REDIS_HOST: overleafredis
+      REDIS_PORT: 6379
+
+      OVERLEAF_REDIS_HOST: overleafredis
+
+      V1_HISTORY_URL: http://127.0.0.1:3100/api
+
+      OVERLEAF_MONGO_URL: mongodb://overleafmongo/sharelatex
+
+      OVERLEAF_APP_NAME: ${OVERLEAF_APP_NAME}
+
+      OVERLEAF_BEHIND_PROXY: true
+      OVERLEAF_SECURE_COOKIE: true
+
+      OVERLEAF_SITE_URL: ${OVERLEAF_SITE_URL}
+      OVERLEAF_NAV_TITLE: ${OVERLEAF_NAV_TITLE}
+
+      OVERLEAF_ADMIN_EMAIL: ${OVERLEAF_ADMIN_EMAIL}
+      OVERLEAF_EMAIL_FROM_ADDRESS: ${OVERLEAF_EMAIL_FROM_ADDRESS}
+      OVERLEAF_EMAIL_SMTP_HOST: ${OVERLEAF_EMAIL_SMTP_HOST}
+      OVERLEAF_EMAIL_SMTP_PORT: ${OVERLEAF_EMAIL_SMTP_PORT}
+      OVERLEAF_EMAIL_SMTP_SECURE: ${OVERLEAF_EMAIL_SMTP_SECURE}
+      OVERLEAF_EMAIL_SMTP_IGNORE_TLS: ${OVERLEAF_EMAIL_SMTP_IGNORE_TLS}
+      OVERLEAF_EMAIL_SMTP_TLS_REJECT_UNAUTH: "false"
+      OVERLEAF_EMAIL_SMTP_LOGGER: true
+      OVERLEAF_CUSTOM_EMAIL_FOOTER: ${OVERLEAF_CUSTOM_EMAIL_FOOTER}
+
+
+    networks:
+      - overleaf-network
+
+    healthcheck:
+      test: bash -c "curl  -fsI --connect-timeout 10 http://localhost || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+
+networks:
+  overleaf-network:
+    external: true
+

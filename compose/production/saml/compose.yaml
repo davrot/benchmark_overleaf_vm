@@ -1,0 +1,27 @@
+services:
+  saml:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saml
+    image: saml-saml:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./saml-emulator/saml_app.py:/app/app.py
+      - ./saml-emulator/certs:/app/certs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - overleaf-network
+
+networks:
+  overleaf-network:
+    external: true

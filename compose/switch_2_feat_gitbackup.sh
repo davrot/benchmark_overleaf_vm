@@ -1,9 +1,10 @@
-BRANCH="main"
+BRANCH="gitbackup"
 rm -rf /workspace/${BRANCH}
 git clone -b ${BRANCH} https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
 cd /workspace/${BRANCH}/server-ce
 make build-base
 make build-community
+make build-gitbackup
 
 cd /workspace/production/
 sh down.sh

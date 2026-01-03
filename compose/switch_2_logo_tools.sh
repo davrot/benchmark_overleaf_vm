@@ -1,6 +1,16 @@
-BRANCH="main"
+BRANCH="logo_tools"
+sudo apt install -y inkscape imagemagick
+sudo ln -s /usr/bin/convert /usr/bin/magick
+
 rm -rf /workspace/${BRANCH}
 git clone -b ${BRANCH} https://github.com/davrot/benchmark_overleaf.git /workspace/${BRANCH}
+
+cd /workspace/${BRANCH}/logo_tools/
+chmod +x 1_convert.sh
+./1_convert.sh
+chmod +x 2_install.sh
+./2_install.sh
+
 cd /workspace/${BRANCH}/server-ce
 make build-base
 make build-community
