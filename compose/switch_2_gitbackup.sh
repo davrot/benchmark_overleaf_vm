@@ -13,4 +13,5 @@ cp /workspace/production/nginx/nginx.conf_main /workspace/production/nginx/nginx
 cp /workspace/production/compose.yaml_main /workspace/production/compose.yaml
 cp /workspace/production/overleafserver/compose.yaml_${BRANCH} /workspace/production/overleafserver/compose.yaml
 
+sudo rm -rf /workspace/production/overleafserver/data_gitbackup
 sh up.sh
