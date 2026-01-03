@@ -5,6 +5,9 @@ cd /workspace/${BRANCH}/server-ce
 make build-base
 make build-community
 
+cd /workspace/production/oidc
+sh build.sh
+
 cd /workspace/production/
 sh down.sh
 

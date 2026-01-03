@@ -9,7 +9,8 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
 # Configuration
-ISSUER = "http://overleaf.local/sso/realms/master"
+# Use HTTPS for issuer since that's what the browser sees
+ISSUER = "https://overleaf.local/sso/realms/master"
 CLIENT_ID = "overleaf_test"
 CLIENT_SECRET = "SOMEPASSWORD"
 VALID_REDIRECT_URI = "https://overleaf.local/oidc/login/callback"
@@ -20,7 +21,7 @@ users = {
     "test2@example.com": {
         "id": "user123",
         "email": "test2@example.com",
-        "given_name": "Test2",
+        "given_name": "Test",
         "family_name": "User",
         "password": "password"
     },
@@ -129,7 +130,7 @@ LOGIN_PAGE = """
         </form>
         <div class="hint">
             <strong>Test Accounts:</strong><br>
-            • test@example.com / password<br>
+            • test2@example.com / password<br>
             • admin@example.com / admin
         </div>
     </div>
@@ -195,20 +196,40 @@ def create_jwt_token(user_data, token_type="access"):
     """Create a JWT token for the user"""
     now = int(time.time())
     
-    payload = {
-        "iss": ISSUER,
-        "sub": user_data["id"],
-        "aud": CLIENT_ID,
-        "exp": now + 3600,  # 1 hour
-        "iat": now,
-        "email": user_data["email"],
-        "given_name": user_data.get("given_name", ""),
-        "family_name": user_data.get("family_name", ""),
-        "name": f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}".strip(),
-    }
-    
     if token_type == "id":
-        payload["email_verified"] = True
+        # ID token with all user claims
+        # Passport-openidconnect builds the profile from ID token claims
+        payload = {
+            "iss": ISSUER,
+            "sub": user_data["id"],
+            "aud": CLIENT_ID,
+            "exp": now + 3600,
+            "iat": now,
+            "email": user_data["email"],
+            "email_verified": True,
+            "given_name": user_data.get("given_name", ""),
+            "family_name": user_data.get("family_name", ""),
+            "name": f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}".strip(),
+        }
+        
+        # Include is_admin in ID token so it's available in the profile
+        if "is_admin" in user_data:
+            payload["is_admin"] = user_data["is_admin"]
+            
+    else:
+        # Access token has full claims for UserInfo endpoint
+        payload = {
+            "iss": ISSUER,
+            "sub": user_data["id"],
+            "aud": CLIENT_ID,
+            "exp": now + 3600,
+            "iat": now,
+            "email": user_data["email"],
+            "given_name": user_data.get("given_name", ""),
+            "family_name": user_data.get("family_name", ""),
+            "name": f"{user_data.get('given_name', '')} {user_data.get('family_name', '')}".strip(),
+        }
+        
         if "is_admin" in user_data:
             payload["is_admin"] = user_data["is_admin"]
     
@@ -224,6 +245,16 @@ def redirect_with_error(redirect_uri, error, error_description, state=None):
         params["state"] = state
     
     return redirect(f"{redirect_uri}?{urlencode(params)}")
+
+@app.route("/")
+@app.route("/health")
+def health():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "ok",
+        "service": "oidc-emulator",
+        "version": "1.0"
+    })
 
 @app.route("/sso/realms/master/.well-known/openid-configuration")
 def openid_configuration():
@@ -466,6 +497,9 @@ def token():
     access_token = create_jwt_token(user, "access")
     id_token = create_jwt_token(user, "id")
     
+    # Debug logging
+    print(f"DEBUG - Token endpoint - User: {user.get('email')}, has is_admin: {'is_admin' in user}")
+    
     # Clean up used code (after a delay to prevent race conditions)
     # In production, you'd use a background task
     
@@ -506,14 +540,23 @@ def userinfo():
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"], audience=CLIENT_ID)
         
-        return jsonify({
+        userinfo_response = {
             "sub": payload["sub"],
             "email": payload["email"],
             "email_verified": True,
             "name": payload["name"],
             "given_name": payload.get("given_name", ""),
             "family_name": payload.get("family_name", "")
-        })
+        }
+        
+        # Include is_admin if present in the token
+        if "is_admin" in payload:
+            userinfo_response["is_admin"] = payload["is_admin"]
+        
+        # Debug logging
+        print(f"DEBUG - UserInfo Response: {userinfo_response}")
+        
+        return jsonify(userinfo_response)
     except jwt.ExpiredSignatureError:
         return jsonify({
             "error": "invalid_token",

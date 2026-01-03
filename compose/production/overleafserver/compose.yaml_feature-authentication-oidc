@@ -46,13 +46,15 @@ services:
       OVERLEAF_OIDC_PROVIDER_ID: oidc
       OVERLEAF_OIDC_ISSUER: https://overleaf.local/sso/realms/master
       OVERLEAF_OIDC_AUTHORIZATION_URL: https://overleaf.local/sso/realms/master/protocol/openid-connect/auth
-      OVERLEAF_OIDC_TOKEN_URL: https://overleaf.local/sso/realms/master/protocol/openid-connect/token
-      OVERLEAF_OIDC_USERINFO_URL: https://overleaf.local/sso/realms/master/protocol/openid-connect/userinfo
-      OVERLEAF_OIDC_LOGOUT_URL: https://overleaf.local/sso/realms/master/protocol/openid-connect/logout
+      OVERLEAF_OIDC_TOKEN_URL: http://oidc:8080/sso/realms/master/protocol/openid-connect/token
+      OVERLEAF_OIDC_USERINFO_URL: http://oidc:8080/sso/realms/master/protocol/openid-connect/userinfo
+      OVERLEAF_OIDC_LOGOUT_URL: http://overleaf.local/sso/realms/master/protocol/openid-connect/logout
       OVERLEAF_OIDC_IDENTITY_SERVICE_NAME: 'Log in with Benchmark SSO'
       OVERLEAF_OIDC_CLIENT_ID: "overleaf_test"
       OVERLEAF_OIDC_CLIENT_SECRET: "SOMEPASSWORD"
       OVERLEAF_OIDC_UPDATE_USER_DETAILS_ON_LOGIN: "true"
+      OVERLEAF_OIDC_IS_ADMIN_FIELD: "is_admin"
+      OVERLEAF_OIDC_IS_ADMIN_FIELD_VALUE: "true"
 
     networks:
       - overleaf-network
