@@ -1,6 +1,6 @@
 services:
   overleafserver:
-    image: docker.io/sharelatex/sharelatex:feature-authentication-oidc
+    image: docker.io/sharelatex/sharelatex:feature-authentication-ldap
     container_name: overleafserver
     hostname: overleafserver
     restart: always
@@ -51,6 +51,15 @@ services:
       OVERLEAF_LDAP_EMAIL_ATT: "mail"
       OVERLEAF_LDAP_FIRST_NAME_ATT: "givenName"
       OVERLEAF_LDAP_LAST_NAME_ATT: "sn"
+
+      OVERLEAF_LDAP_SEARCH_ATTRIBUTES: '["uid", "sn", "givenName", "mail", "gidNumber", "employeeType"]'
+      OVERLEAF_LDAP_UPDATE_USER_DETAILS_ON_LOGIN: "true"
+      OVERLEAF_LDAP_IS_ADMIN_ATT: "employeeType"
+      OVERLEAF_LDAP_IS_ADMIN_ATT_VALUE: "admin"
+
+      OVERLEAF_LDAP_CONTACTS_FILTER: "(gidNumber={{userProperty}})"
+      OVERLEAF_LDAP_CONTACTS_PROPERTY: "gidNumber"
+      OVERLEAF_LDAP_CONTACTS_NON_LDAP_VALUE: "1000"
 
     networks:
       - overleaf-network

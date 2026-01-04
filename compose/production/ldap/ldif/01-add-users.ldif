@@ -1,3 +1,5 @@
+# LDIF file to initialize OpenLDAP with test users for Overleaf testing
+
 # Organizational Unit for people
 dn: ou=people,dc=example,dc=com
 objectClass: organizationalUnit
@@ -37,7 +39,7 @@ gidNumber: 1000
 uidNumber: 10002
 homeDirectory: /home/asmith
 
-# User 3: Admin User
+# User 3: Admin User (detected by employeeType)
 dn: uid=admin,ou=people,dc=example,dc=com
 objectClass: top
 objectClass: person
@@ -48,9 +50,43 @@ uid: admin
 cn: Admin User
 sn: User
 givenName: Admin
-mail: admin@example.com
+mail: admin2@example.com
 userPassword: adminpass
+employeeType: admin
 gidNumber: 1001
 uidNumber: 10003
 homeDirectory: /home/admin
 
+# User 4: Bob Wilson
+dn: uid=bwilson,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: bwilson
+cn: Bob Wilson
+sn: Wilson
+givenName: Bob
+mail: bob.wilson@example.com
+userPassword: bobpass
+gidNumber: 1000
+uidNumber: 10004
+homeDirectory: /home/bwilson
+
+# User 5: Carol Jones
+dn: uid=cjones,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: cjones
+cn: Carol Jones
+sn: Jones
+givenName: Carol
+mail: carol.jones@example.com
+userPassword: carolpass
+gidNumber: 1002
+uidNumber: 10005
+homeDirectory: /home/cjones
