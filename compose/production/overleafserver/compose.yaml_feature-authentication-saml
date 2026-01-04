@@ -7,6 +7,8 @@ services:
     volumes:
     - ./data:/var/lib/overleaf
     - /var/run/docker.sock:/var/run/docker.sock
+    - ../saml/certs/saml_certificate.pem:/var/lib/overleaf/certs/idp_cert.pem:ro
+
     ports:
     - 80
 
@@ -42,31 +44,29 @@ services:
       OVERLEAF_EMAIL_SMTP_LOGGER: true
       OVERLEAF_CUSTOM_EMAIL_FOOTER: ${OVERLEAF_CUSTOM_EMAIL_FOOTER}
 
+      #################
+      ## SAML CONFIG ##
+      #################
+      EXTERNAL_AUTH: "saml"
+      OVERLEAF_SAML_IDENTITY_SERVICE_NAME: "Log in with SAML"
 
-      EXTERNAL_AUTH: saml
-      OVERLEAF_OIDC_PROVIDER_ID: saml
+      OVERLEAF_SAML_USER_ID_FIELD: "email"
+      OVERLEAF_SAML_EMAIL_FIELD: "email"
+      OVERLEAF_SAML_FIRST_NAME_FIELD: "givenName"
+      OVERLEAF_SAML_LAST_NAME_FIELD: "lastName"
 
-      OVERLEAF_SAML_IDENTITY_SERVICE_NAME: 'Log in with SAML IdP'
-
-      OVERLEAF_SAML_USER_ID_FIELD: email
-      OVERLEAF_SAML_EMAIL_FIELD: mail
-      OVERLEAF_SAML_FIRST_NAME_FIELD: givenName
-      OVERLEAF_SAML_LAST_NAME_FIELD: sn
       OVERLEAF_SAML_UPDATE_USER_DETAILS_ON_LOGIN: "true"
 
-      OVERLEAF_SAML_ENTRYPOINT: https://overleaf.local/saml/idp/SSOService
-      OVERLEAF_SAML_LOGOUT_URL: https://overleaf.local/saml/idp/SingleLogoutService
+      OVERLEAF_SAML_ENTRYPOINT: "https://overleaf.local/saml/idp/SSOService"
+      OVERLEAF_SAML_LOGOUT_URL: "https://overleaf.local/saml/idp/SingleLogoutService"
 
-      OVERLEAF_SAML_CALLBACK_URL: https://overleaf.local/saml/login/callback
-      OVERLEAF_SAML_LOGOUT_CALLBACK_URL: https://overleaf.local/saml/logout/callback
+      OVERLEAF_SAML_ISSUER: "MyOverleaf"
+      OVERLEAF_SAML_CALLBACK_URL: "https://overleaf.local/saml/login/callback"
+      OVERLEAF_SAML_LOGOUT_CALLBACK_URL: "https://overleaf.local/saml/logout/callback"
 
-      OVERLEAF_SAML_ISSUER: MyOverleaf
-      OVERLEAF_SAML_IDP_CERT: /var/lib/overleaf/certs/idp_cert.pem
+      OVERLEAF_SAML_IDP_CERT: "/var/lib/overleaf/certs/idp_cert.pem"
 
-      OVERLEAF_SAML_WANT_ASSERTIONS_SIGNED: "false"
-      OVERLEAF_SAML_WANT_AUTHN_RESPONSE_SIGNED: "false"
-
-      OVERLEAF_SAML_IS_ADMIN_FIELD: is_admin
+      OVERLEAF_SAML_IS_ADMIN_FIELD: "is_admin"
       OVERLEAF_SAML_IS_ADMIN_FIELD_VALUE: "true"
 
     networks:

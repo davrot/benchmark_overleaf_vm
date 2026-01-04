@@ -9,9 +9,24 @@ services:
       - "8081:8081"
     environment:
       - FLASK_ENV=development
+      # IdP Configuration
+      - IDP_ENTITY_ID=https://overleaf.local/saml/idp
+      - SP_ENTITY_ID=MyOverleaf
+      - SP_ACS_URL=https://overleaf.local/saml/login/callback
+      - SP_SLS_URL=https://overleaf.local/saml/logout/callback
+      # Attribute name mappings - change these to match your Overleaf config
+      # Option 1: Use 'lastName' (default)
+      - ATTR_EMAIL=email
+      - ATTR_GIVEN_NAME=givenName
+      - ATTR_SURNAME=lastName
+      - ATTR_MAIL=mail
+      - ATTR_IS_ADMIN=is_admin
+      # Option 2: Use 'sn' for surname (uncomment to use)
+      # - ATTR_SURNAME=sn
+      - CERT_DIR=/app/certs
     volumes:
-      - ./saml-emulator/saml_app.py:/app/app.py
-      - ./saml-emulator/certs:/app/certs
+      - ./app.py:/app/app.py
+      - ./certs:/app/certs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:8081/health"]
       interval: 30s
