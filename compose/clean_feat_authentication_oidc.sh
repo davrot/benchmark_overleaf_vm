@@ -1,4 +1,4 @@
-BRANCH="feature_latex_editor"
+BRANCH="feature-authentication-oidc"
 rm -rf /workspace/${BRANCH}
 
 cp /workspace/production/nginx/nginx.conf_main /workspace/production/nginx/nginx.conf
