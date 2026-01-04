@@ -1,0 +1,56 @@
+# Organizational Unit for people
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: people
+
+# User 1: John Doe
+dn: uid=jdoe,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: jdoe
+cn: John Doe
+sn: Doe
+givenName: John
+mail: john.doe@example.com
+userPassword: password123
+gidNumber: 1000
+uidNumber: 10001
+homeDirectory: /home/jdoe
+
+# User 2: Alice Smith
+dn: uid=asmith,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: asmith
+cn: Alice Smith
+sn: Smith
+givenName: Alice
+mail: alice.smith@example.com
+userPassword: alicepass
+gidNumber: 1000
+uidNumber: 10002
+homeDirectory: /home/asmith
+
+# User 3: Admin User
+dn: uid=admin,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: admin
+cn: Admin User
+sn: User
+givenName: Admin
+mail: admin@example.com
+userPassword: adminpass
+gidNumber: 1001
+uidNumber: 10003
+homeDirectory: /home/admin
+

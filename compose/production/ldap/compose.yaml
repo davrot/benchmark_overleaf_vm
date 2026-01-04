@@ -1,0 +1,34 @@
+services:
+  ldap:
+    image: osixia/openldap:1.5.0
+    container_name: ldap
+    ports:
+      - "389:389"
+      - "636:636"
+    environment:
+      - LDAP_ORGANISATION=Example Inc
+      - LDAP_DOMAIN=example.com
+      - LDAP_ADMIN_PASSWORD=admin_password
+      - LDAP_CONFIG_PASSWORD=config_password
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=ldap_reader
+      - LDAP_READONLY_USER_PASSWORD=GoodNewsEveryone
+      - LDAP_TLS=false
+    volumes:
+      - ./data:/var/lib/ldap
+      - ./config:/etc/ldap/slapd.d
+      - ./ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    command: --copy-service --loglevel debug
+    healthcheck:
+      test: ["CMD-SHELL", "ldapsearch -x -H ldap://127.0.0.1:389 -D 'cn=admin,dc=example,dc=com' -w admin_password -b 'dc=example,dc=com' -s base '(objectClass=*)' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - overleaf-network
+
+networks:
+  overleaf-network:
+    external: true
