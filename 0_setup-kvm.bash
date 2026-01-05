@@ -37,7 +37,8 @@ elif [ "$OS" = "ubuntu" ]; then
         virtinst \
         virt-manager \
         libguestfs-tools \
-        cloud-image-utils
+        cloud-image-utils \
+		python3-gi
 fi
 
 echo "🔧 Configuring libvirt..."

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+chmod 0600 ./cloud-init-key
+
 TARGET_VM="overleaf-production_build"
 SSH_PORT="2226" # Use a different port than your other VMs
 

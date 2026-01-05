@@ -47,6 +47,7 @@ fi
 
 # Create cloud-init config
 cat ${YAML_FILE} | sed "s/VM_NAME_PLACEHOLDER/${VM_NAME}/g" > /tmp/cloud-init-${VM_NAME}.yaml
+chmod 777 /tmp/cloud-init-${VM_NAME}.yaml
 
 # Create cloud-init ISO
 $CLOUD_INIT_CMD "$CLOUD_INIT_ISO" /tmp/cloud-init-${VM_NAME}.yaml
