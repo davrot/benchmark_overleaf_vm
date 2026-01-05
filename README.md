@@ -182,22 +182,12 @@ EOF
 
 # How to move the VM from one computer to another
 
+Old computer:
 ```
 virsh -c qemu:///session dumpxml overleaf-production_build > overleaf-production_build.xml
 ```
 
-Open overleaf-production_build.xml and look for the 
-```
-<mac address='...'/> 
-```
-line under the 
-```
-<interface> 
-```
-section. 
-
-You can delete that line to let the new host generate a fresh MAC address, avoiding network collisions.
-
+New computer:
 ```
 virsh -c qemu:///session define overleaf-production_build.xml
 ```
