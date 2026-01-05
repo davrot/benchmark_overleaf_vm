@@ -55,4 +55,7 @@ ssh -p $SSH_PORT -i ./cloud-init-key -o StrictHostKeyChecking=no ubuntu@localhos
   sudo systemctl enable --now qemu-guest-agent
 EOF
 
+scp -r -P $SSH_PORT -i ./cloud-init-key -o StrictHostKeyChecking=no ./compose/* ubuntu@localhost:/workspace
+
+
 echo "✅ Build complete on $TARGET_VM"
