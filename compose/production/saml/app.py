@@ -346,34 +346,56 @@ def create_saml_response(user, request_id, acs_url, session_index):
 </samlp:Response>'''
     
     try:
-        from signxml import XMLSigner
+        from signxml import XMLSigner, methods
         
-        signer = XMLSigner()
+        # Use PEM-encoded key/cert for signxml
+        key_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        cert_pem = cert.public_bytes(serialization.Encoding.PEM)
+        
+        # Create signer with explicit algorithms and enveloped method
+        signer = XMLSigner(method=methods.enveloped,
+                           signature_algorithm="rsa-sha256",
+                           digest_algorithm="sha256",
+                           c14n_algorithm="http://www.w3.org/2001/10/xml-exc-c14n#")
+        
         root = etree.fromstring(saml_response.encode('utf-8'))
-        
         # Locate the Assertion element specifically
         assertion = root.find('.//{urn:oasis:names:tc:SAML:2.0:assertion}Assertion')
         
-        # Sign the assertion element
-        # 'reference_uri' links the signature to the specific Assertion ID
+        # Sign the assertion element (reference to its ID)
         signed_assertion = signer.sign(
             assertion,
-            key=private_key,
-            cert=cert,
-            reference_uri=f"#{assertion_id}", 
-            algorithm="rsa-sha256",
-            digest_algorithm="sha256",
-            c14n_algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"
+            key=key_pem,
+            cert=cert_pem,
+            reference_uri=f"#{assertion_id}",
         )
-        
         # Replace old assertion with signed assertion
         parent = assertion.getparent()
         parent.replace(assertion, signed_assertion)
         
-        return etree.tostring(root, encoding='unicode')
+        # Also sign the Response element (some SPs validate the Response signature)
+        # Note: signxml will insert a Signature element into the Response
+        signed_response = signer.sign(
+            root,
+            key=key_pem,
+            cert=cert_pem,
+            reference_uri=f"#{response_id}",
+        )
+        
+        # Debug: verify Signature elements are present
+        sigs = signed_response.findall('.//{http://www.w3.org/2000/09/xmldsig#}Signature')
+        print(f"DEBUG - Signature count after signing: {len(sigs)}")
+        
+        return etree.tostring(signed_response, encoding='unicode')
         
     except Exception as e:
         print(f"ERROR creating SAML response: {e}")
+        import traceback
+        traceback.print_exc()
         return saml_response
 
 @app.route("/")
